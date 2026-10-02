@@ -1,50 +1,60 @@
-import React, {useState, useEffect, useRef} from 'react';
+﻿import React, {useEffect, useRef, useState} from 'react';
 import {createRoot} from 'react-dom/client';
+import '@fontsource-variable/fredoka';
+import '@fontsource-variable/caveat';
+import '@fontsource/bungee/latin-400.css';
 import './style.css';
-const A='/assets/';
-function initialTheme(){
- try{const saved=localStorage.getItem('zholaman-theme');if(saved==='light'||saved==='dark')return saved}catch{}
- return window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
-}
-const memes=[['cat.png','Me when it finally compiles','After 67 attempts. And one missing semicolon.'],['unicorn.webp','POV: programming lesson','Walking into class knowing Zholaman is teaching.'],['meme-0.webp','The bug was me all along','It was not the compiler. It was never the compiler.'],['meme-1.webp','Deploying on a Friday','What could possibly go wrong?'],['meme-2.webp','“Explain your code.”','Me trying to explain what the AI just wrote.'],['meme-3.webp','Senior developer energy','Zholaman spotting the bug from across the room.'],['meme-4.webp','Let him cook','One more line. Trust the process.'],['meme-5.webp','Permission denied','When we ask to leave before fixing the bug.'],['meme-6.webp','The only correct answer','How many aura points? Six. Seven.']];
+
+const assets='/assets/';
+const wishes=[
+ ['More happiness.','May there always be time for the people, places, and little things that make you happy.'],
+ ['Fresh inspiration.','May your next idea excite you as much as your lessons inspire us to create something of our own.'],
+ ['Good health.','We wish you strength, peace of mind, and the energy to enjoy everything you love.'],
+ ['The respect you deserve.','May you always feel how much your work matters and how many lives you make a little better.']
+];
+const memes=[['cat.png','Us when the code finally works.'],['unicorn.webp','On our way to your programming lesson.'],['meme-0.webp','It was my bug all along.'],['meme-1.webp','One tiny change before deployment.'],['meme-2.webp','“Now explain your code.”'],['meme-3.webp','You finding the bug in two seconds.'],['meme-4.webp','Let him cook.'],['meme-5.webp','Can we skip the homework?'],['meme-6.webp','The only correct answer.']];
+
 function App(){
- const [toast,setToast]=useState(''),[active,setActive]=useState(null),[clicks,setClicks]=useState(0),[aura,setAura]=useState(null),[scan,setScan]=useState(false),[chaos,setChaos]=useState(0),[wish,setWish]=useState(0),[theme,setTheme]=useState(initialTheme);
- const timer=useRef(),scanTimer=useRef(),dialog=useRef();
- const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
- function notify(msg){setToast(msg);clearTimeout(timer.current);timer.current=setTimeout(()=>setToast(''),3500)}
- function confetti(){if(reduced)return; const colors=['#ff56a8','#2448ff','#d2f95b','#ffef44','#f8f5ee'];for(let i=0;i<85;i++){const p=document.createElement('i');p.className='confetti';p.style.cssText=`left:${Math.random()*100}vw;background:${colors[i%5]};--drift:${(Math.random()-.5)*420}px;--spin:${Math.random()*1000}deg;animation-duration:${2+Math.random()*2}s;animation-delay:${Math.random()*.3}s`;document.body.appendChild(p);p.addEventListener('animationend',()=>p.remove(),{once:true})}}
- function celebrate(){confetti();notify('Happy Teacher’s Day, Zholaman Agai! You absolute legend.');}
- function hit67(){const next=clicks+1;setClicks(next);if(next===67){confetti();notify('SECRET UNLOCKED: 67 clicks. Infinite teacher aura.')}else if(next%7===0){confetti();notify('Certified 67 moment. Keep going.')}}
- function scanAura(){if(scan)return;setScan(true);setAura(null);scanTimer.current=setTimeout(()=>{setAura('+67,000');setScan(false);confetti()},1700)}
- useEffect(()=>()=>{clearTimeout(timer.current);clearTimeout(scanTimer.current)},[]);
+ const [celebrating,setCelebrating]=useState(false),[notice,setNotice]=useState('');
+ const celebrationTimer=useRef(),noticeTimer=useRef();
+ const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ function celebrate(){
+  setCelebrating(true);setNotice('Happy Teacher’s Day, Zholaman Agai!');
+  clearTimeout(celebrationTimer.current);clearTimeout(noticeTimer.current);
+  celebrationTimer.current=setTimeout(()=>setCelebrating(false),2400);
+  noticeTimer.current=setTimeout(()=>setNotice(''),4200);
+  if(reduce)return;
+  if(document.querySelectorAll('.confetti').length>120)return;
+  const colors=['#ffe9a9','#f791b7','#c8a9ef','#f6d6e4','#a4c8b8'];
+  for(let i=0;i<100;i++){
+   const piece=document.createElement('i');piece.className='confetti';
+   piece.style.cssText=`left:${Math.random()*100}vw;--color:${colors[i%colors.length]};--drift:${(Math.random()-.5)*400}px;--spin:${Math.random()*900}deg;--duration:${2.6+Math.random()*2}s;--delay:${Math.random()*.35}s;--radius:${i%3===0?'50%':'1px'}`;
+   document.body.appendChild(piece);piece.addEventListener('animationend',()=>piece.remove(),{once:true});
+  }
+ }
  useEffect(()=>{
-  if(reduced)return;
-  const elements=document.querySelectorAll('.section-top, .meme-card, .play-title, .play-grid, .quote-section blockquote, .message-heading, .letter, .wish-section');
-  const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('revealed');observer.unobserve(entry.target)}}),{threshold:.12});
-  elements.forEach((element,index)=>{element.classList.add('reveal');element.style.setProperty('--reveal-delay',`${element.classList.contains('meme-card')?(index%4)*70:0}ms`);observer.observe(element)});
-  return ()=>{observer.disconnect();elements.forEach(element=>element.classList.remove('reveal'))};
- },[reduced]);
- useEffect(()=>{if(active!==null)dialog.current?.showModal();else if(dialog.current?.open)dialog.current.close()},[active]);
- useEffect(()=>{
- document.documentElement.dataset.theme=theme;
- document.querySelector('meta[name="theme-color"]')?.setAttribute('content',theme==='dark'?'#171b29':'#ffef44');
- try{localStorage.setItem('zholaman-theme',theme)}catch{}
-},[theme]);
- const wishes=['May your coffee be strong, your code compile, and your students finally remember the semicolon.','Wishing you fewer bugs, more happy moments, and a year full of things worth celebrating.','May every lesson bring a good laugh, a new idea, and at least one student who reads the error message.','Wishing you infinite patience, excellent health, and 67 reasons to smile every single day.'];
- return <>
- <header><a href="#" className="brand">zholaman<span className="brand-star">✳</span>day</a><nav><a href="#memes">The meme wall</a><a href="#message">A real thank you</a></nav><button className="theme" aria-label={theme==='light'?'Switch to night mode':'Switch to light mode'} title={theme==='light'?'Night mode':'Light mode'} aria-pressed={theme==='dark'} onClick={()=>setTheme(theme==='light'?'dark':'light')}>{theme==='light'?'☾':'☀'}</button><button className="nav-party" onClick={celebrate}>Party mode ↗</button></header>
- <main>
- <section className="hero" aria-labelledby="hero-title"><div className="hero-copy"><span className="eyebrow">FOR OUR FAVORITE PROGRAMMING TEACHER</span><h1 id="hero-title">Happy<br/>Teacher’s Day<span className="pink-period">!</span></h1><div className="name-line">Zholaman<span className="scribble">you’re a legend.</span></div><p>You taught us to code.<br/>We made you this absolute masterpiece.</p><button className="button blue" onClick={celebrate}>Celebrate this legend <span>↗</span></button></div>
- <div className="hero-art"><div className="blue-orbit"/><span className="hero-star" aria-hidden="true">✳</span><div className="teacher-photo"><div className="tape"/><div className="portrait"><img src={A+'zholaman.png'} alt="Zholaman, on the right, celebrating with a colleague" fetchPriority="high"/></div><div className="photo-caption">THE MAN. THE MYTH. THE TEACHER.<span>♥</span></div></div><button className="hero-cat" onClick={()=>setActive(0)} aria-label="Open happy cat meme"><img src={A+'cat.png'} alt="Very excited cat"/></button><button className="seal" onClick={hit67} aria-label="Add one to the secret 67 counter"><strong>67</strong><span>certified legend</span></button><span className="hand-note">aura? unmatched. ↗</span></div></section>
- <div className="ticker" aria-label="Great teacher, questionable website"><div>{Array.from({length:4},(_,i)=><span key={i}>GREAT TEACHER <b>✳</b> QUESTIONABLE WEBSITE <b>✳</b> MAXIMUM RESPECT <b>✳</b> 6 7 <b>✳</b> </span>)}</div></div>
- <section id="memes" className="meme-section"><div className="section-top"><h2>A very serious<br/><span>tribute.</span></h2><p>Curated with love. Pinned with questionable judgment.<br/>Tap a meme. There is probably a joke.</p></div><div className="meme-wall">{memes.map(([src,title],i)=><button className={'meme-card card-'+i} key={src} onClick={()=>setActive(i)} style={{'--rotation':[-6,5,-3,4,-5,3,-4,5,-3][i]+'deg'}}><span className="pin"/><img loading="lazy" src={A+src} alt={title}/><span className="meme-caption">{title}<span>↗</span></span></button>)}<div className="meme-card video-card"><span className="tape"/><video src={A+'meme.webm'} autoPlay={!reduced} loop muted playsInline controls preload="metadata" aria-label="A looping meme from your students"/><span className="meme-caption">Our last two brain cells.</span></div><div className="wall-note">100% educational.<br/>Definitely.</div></div></section>
- <section className="play-section" id="play"><div className="play-title"><span className="mini-label">NO HOMEWORK HERE</span><h2>Highly advanced<br/>teacher appreciation.</h2></div><div className="play-grid"><div className="sixseven"><span className="mini-label">THE NUMBER. THE LEGEND.</span><button className="giant-67" onClick={hit67} aria-label="Click 67 to increase the counter">6<span>7</span></button><p>No context. Just 67.</p><div className="click-count">{clicks}/67 clicks <span>{clicks>=67?'Legend unlocked!':'There might be a secret.'}</span></div></div><div className="aura-panel"><span className="mini-label">TOTALLY SCIENTIFIC AURA SCANNER</span><div className={'aura-result '+(scan?'scanning':'')}>{scan?'Scanning…':aura||'∞'}<span>{aura?'AURA POINTS. OBVIOUSLY.':scan?'Detecting legendary teacher energy':'TEACHER ENERGY'}</span></div><p>{aura?'Explains it again. Finds every bug. Still believes in us.':'Our extremely real algorithm has a theory about you.'}</p><button className="button" disabled={scan} onClick={scanAura}>{scan?'Please stand by…':aura?'Scan again ↗':'Calculate my aura ↗'}</button><small>For laughs. The gratitude is real.</small></div></div><div className="useless"><span>{['A button with absolutely no educational value.','You have successfully achieved nothing. +67 aura.','Still no homework done. Impressive dedication.','Achievement unlocked: professional button clicker.'][chaos%4]}</span><button onClick={()=>{setChaos(chaos+1);confetti();notify(['Task failed successfully.','The compiler is applauding.','67 has entered the chat.'][chaos%3])}}>Do absolutely nothing useful ↗</button></div></section>
- <section className="quote-section"><span className="quote-mark">“</span><blockquote>да да этот сайт был<br/>навайбкоженный <span>ai slop</span></blockquote><p>Zholaman, probably looking at this website</p><span className="quote-note">okay, but it was<br/>made with love ♥</span><img src={A+'meme-3.webp'} alt="A suspiciously confident meme character" loading="lazy"/></section>
- <section id="message" className="message-section"><div className="message-heading"><span className="mini-label">JOKES ASIDE, FOR A MOMENT.</span><h2>Thank you<br/>for <span>everything.</span></h2><div className="flower" aria-hidden="true">✳</div></div><div className="letter"><span className="letter-to">Dear Zholaman Agai,</span><p>Thank you for teaching us more than programming. You teach us to think, to try again, and to believe that we can build something of our own.</p><p>For every bug you helped us find, every concept you explained one more time, and every lesson that turned into a good memory: thank you.</p><p>We wish you happiness, good health, endless inspiration, and students who finally understand why their code doesn’t work.</p><strong>You make a difference.<br/>Even when our code makes no sense.</strong><div className="signature">With love, your students <span>♥</span></div></div></section>
- <section className="wish-section"><span>A LITTLE EXTRA GOOD ENERGY</span><p key={wish}>{wishes[wish%wishes.length]}</p><button className="button" onClick={()=>{setWish(wish+1);confetti()}}>One more wish ↻</button></section>
- <footer><div>Best teacher.<br/><span>No syntax errors.</span><button onClick={celebrate} aria-label="Launch celebration confetti">↗</button></div><div className="footer-bottom"><a className="brand" href="#">zholaman✳day</a><span>Made with love, memes, and approximately 67 bugs.</span><a href="#">Back to the party ↑</a></div></footer>
- </main><div className={'toast '+(toast?'visible':'')} role="status">{toast}</div>
- <dialog ref={dialog} onCancel={()=>setActive(null)} onClick={e=>{if(e.target===dialog.current)setActive(null)}}><button className="close" aria-label="Close meme" onClick={()=>setActive(null)}>×</button>{active!==null&&<><img src={A+memes[active][0]} alt={memes[active][1]}/><h3>{memes[active][1]}</h3><p>{memes[active][2]}</p></>}</dialog>
- </>;
+  document.documentElement.removeAttribute('data-theme');
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content','#71334d');
+  const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');observer.unobserve(entry.target)}}),{threshold:.1});
+  if(!reduce)document.querySelectorAll('[data-reveal]').forEach(el=>{el.classList.add('will-reveal');observer.observe(el)});
+  return ()=>{observer.disconnect();clearTimeout(celebrationTimer.current);clearTimeout(noticeTimer.current);document.querySelectorAll('.confetti').forEach(el=>el.remove())};
+ },[reduce]);
+ return <div className={celebrating?'site celebrating':'site'}>
+  <div className="ambient-sparkles" aria-hidden="true">{Array.from({length:12},(_,i)=><span key={i} style={{'--x':`${(i*31+8)%100}%`,'--y':`${(i*23+5)%100}%`,'--delay':`${i*.43}s`}}>✦</span>)}</div>
+  <header className="header"><a href="#home" className="wordmark">Zholaman<span>✳</span>Agai</a><nav aria-label="Main navigation"><a href="#thanks">Our thank you</a><a href="#wishes">Good wishes</a><a href="#memes">A little chaos</a></nav><button className="party-button" onClick={celebrate}>Make it festive <span>✷</span></button></header>
+  <main>
+   <section className="hero section" id="home" aria-labelledby="hero-title">
+    <div className="hero-copy"><p className="handwritten hero-pretitle">For a teacher we’re lucky to have.</p><h1 id="hero-title">Happy<br/><span>Teacher’s Day!</span></h1><p className="hero-name">Zholaman <span>Agai</span></p><p className="hero-message">You teach us to build things.<br/>You give us the confidence to try.<br/>Today, this little celebration is for you.</p><button className="celebrate-button" onClick={celebrate}>With love, from your students <span>♥</span></button></div>
+    <div className="hero-portrait"><div className="portrait-halo" aria-hidden="true"/><span className="portrait-spark spark-one" aria-hidden="true">✳</span><span className="portrait-spark spark-two" aria-hidden="true">✦</span><div className="photo-window"><img src={assets+'zholaman.png'} alt="Zholaman Agai, the teacher on the right in the original photo" fetchPriority="high"/></div><span className="portrait-note handwritten">our favorite<br/>programming teacher ↗</span><span className="portrait-67">6<span>7</span></span><span className="portrait-love handwritten">big respect.<br/>even bigger gratitude.</span></div>
+    <span className="hero-bottom-note handwritten">A little brainrot. A whole lot of love.</span>
+   </section>
+   <section id="thanks" className="gratitude section"><div className="gratitude-heading" data-reveal><span className="little-flower" aria-hidden="true">✳</span><p className="handwritten">Jokes aside, Agai.</p><h2>You make<br/><em>a difference.</em></h2></div><div className="letter" data-reveal><p className="letter-salutation handwritten">Dear Zholaman Agai,</p><p>Thank you for every lesson, every patient explanation, and every time you helped us believe that we could figure it out.</p><p>We appreciate the time and care you put into teaching us. You make room for questions, help us learn from our mistakes, and remind us that getting stuck is part of getting better.</p><p>We respect you for your knowledge, your kindness, and the way you encourage us to think for ourselves. You’re helping us become more confident people, as well as better programmers.</p><p className="letter-highlight">The code might be forgotten.<br/>The way you believed in us won’t be.</p><p className="letter-signature handwritten">With love and respect,<br/>your students <span>♥</span></p></div></section>
+   <section className="wishes section" id="wishes"><div className="wishes-heading" data-reveal><p className="handwritten">A few things we wish for you.</p><h2>All the good things.<br/><span>You deserve them.</span></h2></div><div className="wish-list">{wishes.map(([title,text],i)=><div className="wish" key={title} data-reveal><span className={'wish-symbol symbol-'+i} aria-hidden="true">{['☀','✳','♥','✦'][i]}</span><div><h3>{title}</h3><p>{text}</p></div></div>)}</div><p className="wish-footnote handwritten" data-reveal>…and students who remember their semicolons, obviously.</p></section>
+   <section className="meme-section section" id="memes"><div className="meme-heading" data-reveal><p className="handwritten">We had to include these.</p><h2>Maximum respect.<br/><span>Minimum seriousness.</span></h2><p>Some things are easier to explain with a cat.</p></div><div className="meme-collage">{memes.map(([image,caption],i)=><figure className={'meme meme-'+i} key={image} data-reveal style={{'--tilt':`${[-5,6,-3,4,-6,3,-4,5,-2][i]}deg`}}><img src={assets+image} alt={caption} loading="lazy"/><figcaption className="handwritten">{caption}</figcaption></figure>)}<figure className="meme meme-video" data-reveal><video src={assets+'meme.webm'} autoPlay={!reduce} muted loop playsInline controls preload="metadata" aria-label="A looping meme from your students"/><figcaption className="handwritten">Our last two brain cells.</figcaption></figure></div><div className="meme-quote" data-reveal><span className="quote-flower" aria-hidden="true">✳</span><blockquote>“да да этот сайт был<br/>навайбкоженный <span>ai slop</span>”</blockquote><p>Zholaman Agai, probably.</p><span className="handwritten quote-response">Fair. But we meant every word. ♥</span></div></section>
+   <section className="finale section" data-reveal><div className="finale-flower" aria-hidden="true">✷</div><p className="handwritten">From all of us, to you.</p><h2>Thank you,<br/><span>Zholaman Agai.</span></h2><p className="finale-message">For your patience. For your encouragement.<br/>For making our programming lessons worth remembering.<br/>We’re grateful to be your students.</p><button className="celebrate-button" onClick={celebrate}>Happy Teacher’s Day! <span>✳</span></button><p className="handwritten finale-signature">Keep being you. We appreciate you.</p></section>
+  </main>
+  <footer><a href="#home" className="wordmark">Zholaman<span>✳</span>Agai</a><p>Made with love, respect, and just a little 67.</p><a href="#home">Back to the celebration ↑</a></footer>
+  <div className={'toast '+(notice?'visible':'')} role="status">{notice}<span aria-hidden="true">♥</span></div>
+ </div>
 }
 createRoot(document.getElementById('root')).render(<App/>);

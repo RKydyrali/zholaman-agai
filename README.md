@@ -1,27 +1,21 @@
-﻿# Zholaman Day
+﻿# Zholaman Agai: Teacher’s Day
 
-A frontend-only Teachers’ Day celebration built with React and Vite. All effects are local simulations. No API keys, backend, or accounts required.
+A frontend-only celebration for Zholaman Agai. Raspberry pink, playful self-hosted Fredoka, Caveat, and Bungee typography, a featured portrait, heartfelt congratulations, and a meme collage without cards.
 
-## Run
+## Run locally
 
 ```sh
 npm install
 npm run dev
 ```
 
-Open the local URL printed by Vite.
-
-## Build
+## Production build
 
 ```sh
 npm run build
 npm run preview
 ```
 
-The `dist` folder is ready for any static hosting service.
+Deploy the `dist` directory to any static host. No backend, accounts, API keys, or external font services are needed.
 
-## Personalize
-
-Edit congratulations, wishes, and meme captions in `src/main.jsx`. Colors and responsive layouts live in `src/style.css`. The supplied photo, nine meme images, and video are in `public/assets`.
-
-Click the large 67 or the hero badge 67 times for the secret. Meme cards open keyboard-accessible dialogs. Escape closes a meme. Reduced-motion preferences disable decorative animation and video autoplay.
+Content is in `src/main.jsx`, styles in `src/style.css`, and the supplied pictures and video in `public/assets`. The celebration button launches confetti. Animations and video autoplay respect reduced-motion preferences.
