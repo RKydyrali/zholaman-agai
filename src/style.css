@@ -44,3 +44,6 @@
 .theme:hover{transform:rotate(-15deg);background:#20201f12}
 [data-theme=dark] .theme:hover{background:#faf6ef15}
 @media(prefers-reduced-motion:reduce){.theme:hover{transform:none}}
+/* Keep every meme fully visible inside its pinned photo frame. */
+.meme-card img{object-fit:contain;background:#f6f4ef;max-width:100%}
+[data-theme=dark] .meme-card img{background:#202433}
