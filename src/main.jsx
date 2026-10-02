@@ -1,4 +1,4 @@
-﻿import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import '@fontsource-variable/fredoka';
 import '@fontsource-variable/caveat';
@@ -18,12 +18,23 @@ function App(){
  const [celebrating,setCelebrating]=useState(false),[notice,setNotice]=useState('');
  const celebrationTimer=useRef(),noticeTimer=useRef();
  const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
- function celebrate(){
+ function celebrate(event){
   setCelebrating(true);setNotice('Happy Teacher’s Day, Zholaman Agai!');
   clearTimeout(celebrationTimer.current);clearTimeout(noticeTimer.current);
   celebrationTimer.current=setTimeout(()=>setCelebrating(false),2400);
   noticeTimer.current=setTimeout(()=>setNotice(''),4200);
   if(reduce)return;
+  const button=event?.currentTarget;
+  if(button && document.querySelectorAll('.button-spark').length<48){
+   const bounds=button.getBoundingClientRect();
+   const originX=bounds.left+bounds.width/2,originY=bounds.top+bounds.height/2;
+   for(let i=0;i<16;i++){
+    const spark=document.createElement('span');spark.className='button-spark';spark.setAttribute('aria-hidden','true');spark.textContent=['?','?','?','?'][i%4];
+    const angle=Math.PI*2*i/16,distance=65+Math.random()*65;
+    spark.style.cssText=`left:${originX}px;top:${originY}px;--burst-x:${Math.cos(angle)*distance}px;--burst-y:${Math.sin(angle)*distance}px;--spark-turn:${Math.random()*160-80}deg;--spark-color:${['#ffe4a1','#ffa1c4','#c5b4e9','#b7d5c3'][i%4]};animation-delay:${i%3*.025}s`;
+    document.body.appendChild(spark);spark.addEventListener('animationend',()=>spark.remove(),{once:true});
+   }
+  }
   if(document.querySelectorAll('.confetti').length>120)return;
   const colors=['#ffe9a9','#f791b7','#c8a9ef','#f6d6e4','#a4c8b8'];
   for(let i=0;i<100;i++){
@@ -37,7 +48,7 @@ function App(){
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content','#71334d');
   const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');observer.unobserve(entry.target)}}),{threshold:.1});
   if(!reduce)document.querySelectorAll('[data-reveal]').forEach(el=>{el.classList.add('will-reveal');observer.observe(el)});
-  return ()=>{observer.disconnect();clearTimeout(celebrationTimer.current);clearTimeout(noticeTimer.current);document.querySelectorAll('.confetti').forEach(el=>el.remove())};
+  return ()=>{observer.disconnect();clearTimeout(celebrationTimer.current);clearTimeout(noticeTimer.current);document.querySelectorAll('.confetti, .button-spark').forEach(el=>el.remove())};
  },[reduce]);
  return <div className={celebrating?'site celebrating':'site'}>
   <div className="ambient-sparkles" aria-hidden="true">{Array.from({length:12},(_,i)=><span key={i} style={{'--x':`${(i*31+8)%100}%`,'--y':`${(i*23+5)%100}%`,'--delay':`${i*.43}s`}}>✦</span>)}</div>

@@ -9,3 +9,12 @@
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}.will-reveal{opacity:1;translate:none}.confetti{display:none}}
 /* Keep the top of the teacher's head visible in the portrait crop. */
 .photo-window img{object-position:100% 0%}
+/* A handwritten invitation and a burst anchored to the clicked button. */
+.celebrate-action{display:inline-block;position:relative;padding-bottom:48px;max-width:100%}
+.click-note{position:absolute;right:5px;bottom:0;font-size:27px;line-height:1;color:var(--pink);transform:rotate(-8deg);display:flex;align-items:center;gap:10px;pointer-events:none;white-space:nowrap}
+.crooked-arrow{font-family:'Caveat Variable',cursive;font-size:48px;line-height:.7;display:inline-block;transform:rotate(-38deg) scaleX(-1);transform-origin:center}
+.button-spark{position:fixed;z-index:20;pointer-events:none;font-size:25px;line-height:1;color:var(--spark-color);opacity:0;animation:button-burst 1.05s cubic-bezier(.15,.65,.35,1) forwards;will-change:transform,opacity}
+.finale .finale-signature{margin-top:15px}
+@keyframes button-burst{0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}15%{opacity:1}75%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--burst-x)),calc(-50% + var(--burst-y))) rotate(var(--spark-turn)) scale(.6)}}
+@media(max-width:767px){.click-note{font-size:25px}.celebrate-action{padding-bottom:45px}.crooked-arrow{font-size:44px}}
+@media(prefers-reduced-motion:reduce){.button-spark{display:none}}
