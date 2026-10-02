@@ -2,9 +2,13 @@ import React, {useState, useEffect, useRef} from 'react';
 import {createRoot} from 'react-dom/client';
 import './style.css';
 const A='/assets/';
+function initialTheme(){
+ try{const saved=localStorage.getItem('zholaman-theme');if(saved==='light'||saved==='dark')return saved}catch{}
+ return window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+}
 const memes=[['cat.png','Me when it finally compiles','After 67 attempts. And one missing semicolon.'],['unicorn.webp','POV: programming lesson','Walking into class knowing Zholaman is teaching.'],['meme-0.webp','The bug was me all along','It was not the compiler. It was never the compiler.'],['meme-1.webp','Deploying on a Friday','What could possibly go wrong?'],['meme-2.webp','“Explain your code.”','Me trying to explain what the AI just wrote.'],['meme-3.webp','Senior developer energy','Zholaman spotting the bug from across the room.'],['meme-4.webp','Let him cook','One more line. Trust the process.'],['meme-5.webp','Permission denied','When we ask to leave before fixing the bug.'],['meme-6.webp','The only correct answer','How many aura points? Six. Seven.']];
 function App(){
- const [toast,setToast]=useState(''),[active,setActive]=useState(null),[clicks,setClicks]=useState(0),[aura,setAura]=useState(null),[scan,setScan]=useState(false),[chaos,setChaos]=useState(0),[wish,setWish]=useState(0),[theme,setTheme]=useState('light');
+ const [toast,setToast]=useState(''),[active,setActive]=useState(null),[clicks,setClicks]=useState(0),[aura,setAura]=useState(null),[scan,setScan]=useState(false),[chaos,setChaos]=useState(0),[wish,setWish]=useState(0),[theme,setTheme]=useState(initialTheme);
  const timer=useRef(),scanTimer=useRef(),dialog=useRef();
  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
  function notify(msg){setToast(msg);clearTimeout(timer.current);timer.current=setTimeout(()=>setToast(''),3500)}
@@ -21,10 +25,14 @@ function App(){
   return ()=>{observer.disconnect();elements.forEach(element=>element.classList.remove('reveal'))};
  },[reduced]);
  useEffect(()=>{if(active!==null)dialog.current?.showModal();else if(dialog.current?.open)dialog.current.close()},[active]);
- useEffect(()=>{document.documentElement.dataset.theme=theme},[theme]);
+ useEffect(()=>{
+ document.documentElement.dataset.theme=theme;
+ document.querySelector('meta[name="theme-color"]')?.setAttribute('content',theme==='dark'?'#171b29':'#ffef44');
+ try{localStorage.setItem('zholaman-theme',theme)}catch{}
+},[theme]);
  const wishes=['May your coffee be strong, your code compile, and your students finally remember the semicolon.','Wishing you fewer bugs, more happy moments, and a year full of things worth celebrating.','May every lesson bring a good laugh, a new idea, and at least one student who reads the error message.','Wishing you infinite patience, excellent health, and 67 reasons to smile every single day.'];
  return <>
- <header><a href="#" className="brand">zholaman<span className="brand-star">✳</span>day</a><nav><a href="#memes">The meme wall</a><a href="#message">A real thank you</a></nav><button className="theme" aria-label="Toggle color theme" onClick={()=>setTheme(theme==='light'?'dark':'light')}>{theme==='light'?'☾':'☀'}</button><button className="nav-party" onClick={celebrate}>Party mode ↗</button></header>
+ <header><a href="#" className="brand">zholaman<span className="brand-star">✳</span>day</a><nav><a href="#memes">The meme wall</a><a href="#message">A real thank you</a></nav><button className="theme" aria-label={theme==='light'?'Switch to night mode':'Switch to light mode'} title={theme==='light'?'Night mode':'Light mode'} aria-pressed={theme==='dark'} onClick={()=>setTheme(theme==='light'?'dark':'light')}>{theme==='light'?'☾':'☀'}</button><button className="nav-party" onClick={celebrate}>Party mode ↗</button></header>
  <main>
  <section className="hero" aria-labelledby="hero-title"><div className="hero-copy"><span className="eyebrow">FOR OUR FAVORITE PROGRAMMING TEACHER</span><h1 id="hero-title">Happy<br/>Teacher’s Day<span className="pink-period">!</span></h1><div className="name-line">Zholaman<span className="scribble">you’re a legend.</span></div><p>You taught us to code.<br/>We made you this absolute masterpiece.</p><button className="button blue" onClick={celebrate}>Celebrate this legend <span>↗</span></button></div>
  <div className="hero-art"><div className="blue-orbit"/><span className="hero-star" aria-hidden="true">✳</span><div className="teacher-photo"><div className="tape"/><div className="portrait"><img src={A+'zholaman.png'} alt="Zholaman, on the right, celebrating with a colleague" fetchPriority="high"/></div><div className="photo-caption">THE MAN. THE MYTH. THE TEACHER.<span>♥</span></div></div><button className="hero-cat" onClick={()=>setActive(0)} aria-label="Open happy cat meme"><img src={A+'cat.png'} alt="Very excited cat"/></button><button className="seal" onClick={hit67} aria-label="Add one to the secret 67 counter"><strong>67</strong><span>certified legend</span></button><span className="hand-note">aura? unmatched. ↗</span></div></section>
